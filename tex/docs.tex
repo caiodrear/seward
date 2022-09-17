@@ -1,0 +1,362 @@
+\documentclass[a4paper,11pt,oneside]{book}
+%---------------------------------definitions----------------------------------
+\newcommand{\HRule}[1]{\rule{\linewidth}{#1}} %horizontal rule
+
+\makeatletter % Title
+\def\printtitle{{\centering \@title\par}}
+\makeatother									
+
+\makeatletter % Author
+\def\printauthor{{\centering \large \@author}}				
+\makeatother							
+
+%----------------------------------metadata------------------------------------
+\title{\normalsize \textsc{``This is my design."} % subtitle
+	   \\[2.0cm] % 2cm spacing
+	   \HRule{1pt} \\ [0.2cm] % upper rule
+	   \LARGE \textbf{\uppercase{Pavlov, Poisson and Parzen}} % title
+	   \HRule{1pt} \\ [3cm] % lower rule + 0.5cm spacing
+	   %\normalsize \today % todays date
+}
+\author{C.D.R.\\}
+%----------------------------------packages------------------------------------
+
+\usepackage{graphicx}
+\usepackage{framed}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{cite}
+\usepackage{mathrsfs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage[a4paper,pdftex]{geometry}	% A4 paper margins
+\usepackage{fancyhdr}
+\setlength{\headheight}{0.2in}
+\pagestyle{fancy}
+\usepackage{bm}
+
+\usepackage{afterpage}
+\usepackage{xcolor}
+\definecolor{bblue}{RGB}{199, 223, 240}
+%\allowdisplaybreaks
+
+%\usepackage[numbers]{natbib}
+%\bibliographystyle{plainnat}
+%\usepackage{cite}
+%\usepackage{url}
+
+%----------------------------------packages------------------------------------
+%-----------------------------commands and titles------------------------------
+
+\newcommand{\fhydro}{d_{\min\left\{\tau_H,\tau_A\right\}}}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section] 
+\newtheorem{lem}[thm]{Lemma} 
+\newtheorem{prop}[thm]{Proposition} 
+\newtheorem*{cor}{Corollary}
+\newtheorem*{rnt}{Radon-Nikodym Theorem}
+\newtheorem*{emh}{Efficient Market Hypothesis}
+\newtheorem*{jdm}{Joint Distribution Matrix}
+\newtheorem*{claim}{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{eg}{Example}[section]
+
+\usepackage[ddmmyy]{datetime}
+\renewcommand{\headrulewidth}{0.5pt}
+\lhead{\chaptername \ \thechapter.}
+\chead{}
+\rhead{\nouppercase{\rightmark}}
+\renewcommand{\footrulewidth}{0.5pt}
+\cfoot{\thepage}
+
+\begin{document}
+%-----------------------------------title--------------------------------------
+\thispagestyle{empty} % remove page numbering on this page
+\pagecolor{bblue}\afterpage{\nopagecolor}
+
+\printtitle % print the title data as defined above
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.4]{illusion.png}
+\end{figure}
+\vfill
+\printauthor % print the author data as defined above
+\newpage
+%---------------------------------contents-------------------------------------
+\newgeometry{tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\tableofcontents
+\thispagestyle{empty}
+\pagebreak
+\setcounter{page}{1}
+%---------------------------------document-------------------------------------
+
+\chapter{Count Distributions}
+\section{Discrete Random Variables}
+For the below, let $(\Omega, \mathcal{F},\mathbb{P})$ be a probability space and $(\mathbb{Z},\mathcal{P}(\mathbb{Z}),\#)$ be the discrete space, integers equipped with the counting measure.
+\begin{defn}[Discrete Random Variable]
+A \emph{discrete random variable} is a function $X:\Omega \rightarrow \mathbb{Z}$ such that for each $Z\in \mathcal{P}(\mathbb{Z})$, $X^{-1}(Z) \in \mathcal{F}$.
+\end{defn}
+\begin{defn}[Discrete Probability Distribution]
+The \emph{distribution} of $X$ is the \emph{pushforward measure} $X_*\mathbb{P}:\mathcal{P}(\mathbb{Z})\rightarrow [0,1]$ given by: \[X_*\mathbb{P}(Z)=\mathbb{P}(X^{-1}(Z))=\mathbb{P}(X \in Z)\]
+\end{defn}
+We say that $X \sim \mathcal{D}$ iff $\forall Z \in \mathcal{P}(Z)$, $X_*\mathbb{P}(Z)=\mathcal{D}(Z)$. However, we will almost always characterise distributions using probability mass functions.
+\subsection{Distribution Functions}
+To understand properly the probability mass function, we require notions of $\sigma$-finiteness and absolute continuity of measures.
+\begin{defn}
+A measure $\mu$ on a measurable space $(\Omega, \mathcal{F})$ is $\sigma$\emph{-finite} if, for each $F \in \mathcal{F}$ with $\mu (F)=\infty$, $F$ can be written as a countable union of sets in $\mathcal{F}$, each with finite measure under $\mu$.
+\end{defn}
+\begin{defn}
+Given measures $\mu ,\nu$ on $(\Omega, \mathcal{F})$, we say that $\mu$ is \emph{absolutely continuous} with respect to $\nu$ and write $\mu\ll \nu$, if for each $F\in \mathcal{F}$, $\nu (A)=0 \Rightarrow \mu (A)=0$.
+\end{defn}
+\begin{rnt}
+Suppose $\mu, \nu$ are two $\sigma$-finite measures on $(\Omega, \mathcal{F})$ with $\mu\ll \nu$. Then there exists a unique\footnote{$\nu$-almost everywhere} measurable function $f:\Omega \rightarrow [0,\infty)$ such that for each $F \in \mathcal{F}$, \[\mu (F) =\int_F f d\nu\] $f$ is called the Radon-Nikodym derivative and is denoted $\frac{d\mu}{d\nu}$.
+\end{rnt}
+\begin{defn}[Probability Mass Function]
+The \emph{probability mass function} of a distribution is given by the Radon-Nikodym derivative of the pushforward measure with respect to the counting measure. Namely any measurable function $f:\mathbb{Z} \rightarrow [0,1]$ such that $\forall Z \subseteq \mathbb{Z}$, \[X_*\mathbb{P}(Z)=\int_Zfd\#\]
+\end{defn}
+\begin{thm}
+Every probability distribution admits a probability mass function.
+\end{thm}
+\begin{proof}
+First observe that, should the derivative exist its range must be limited from $[0,\infty)$ to the range of the pushforward measure $[0,1]$ as the integral is summing values in the function range. To show existence, it suffices, by the Radon-Nikodym theorem, to show that every discrete distribution is absolutely continuous with respect to the counting measure. Suppose that $\#(Z)=0$ then $Z=\varnothing$ and by definition of a measure, $X_*\mathbb{P}(\varnothing)=0$.
+\end{proof}
+\begin{defn}[Cumulative Distribution Function]
+The \emph{cumulative distribution function} of a distribution $F:\mathbb{Z}\rightarrow [0,1]$, with mass function $f$, is given by the distribution function of an interval:
+\[F(x)=X_*\mathbb{P}([0,\max\{0,x\}])=\int_{[0,\max\{0,x\}]}fd\#=\sum_{i=0}^{\max\{0,x\}}f(x)\]
+\end{defn}
+We define a left inverse of the c.d.f.~to generate count distribution variables from the uniform distribution. It is a consequence of Cantor's work that no right inverse, and hence inverse, exists.
+\begin{defn}
+The \emph{inverse c.d.f.}~$F^{-1}:[0,1] \rightarrow \mathbb{Z}$ of the a distribution is given by:
+\[F^{-1}(u)=\min\{k \in \mathbb{Z}: u \le F(k)\}\]
+\end{defn}
+\subsection{Variable Spaces}
+In general, the underlying measure space $(\Omega, \mathcal{F},\mathbb{P})$ of an experiment is rarely explicitly characterized or even characterizable and so we will denote the set of all random variables with discrete space domain as $\mathcal{L}$.
+\begin{defn}[The Distribution Space]
+The \emph{distribution space} of a discrete distribution $\mathcal{D}$ is given by the set of all discrete random variables with distribution $\mathcal{D}$, denoted:
+\[\mathcal{L}(\mathcal{D})=\left\{X:(\Omega, \mathcal{F},\mathbb{P})\rightarrow (\mathbb{Z},\mathcal{P}(\mathbb{Z}),\#) : X \sim \mathcal{D} \right\}=\left\{X \in \mathcal{L} : X \sim \mathcal{D} \right\}\]
+\end{defn}
+\section{Uniform Draw Representation}
+For the below, we require the notion of a continuous random variable. The domain measure space is $([0,1], L[0,1],\lambda)$, the unit interval with the Lebesgue $\sigma$-algebra and the Lebesgue measure. The definition is analogous to the discrete case.
+\begin{defn}
+A random variable $U:\Omega \rightarrow [0,1]$ is \emph{uniformly distributed} if for each measurable subset $Z \subseteq [0,1]$, $\mathbb{P}(U \in Z)=\lambda(Z)$.
+\end{defn}
+Note that this implies that $\forall a,b,k \in [0,1]$ with $a\le b$, \[\mathbb{P}(k \in [a,b])=\mathbb{P}(k \in (a,b])=\mathbb{P}(k \in [a,b))=\mathbb{P}(k \in (a,b))=b-a\]
+\begin{defn}[Uniform Draw Variable]
+For a uniform random variable $U$, the associated \emph{uniform draw variable} of a distribution with c.d.f.~$F$ is given by $F^{-1}(U)$.
+\end{defn}
+\begin{prop}
+$F^{-1}(U)$ has the distribution associated with $F$.
+\end{prop}
+\begin{proof}
+It suffices to show that the variable has the density that defines the cumulative distribution function.
+\begin{align*}
+\mathbb{P}(F^{-1}(U)=k)&=\mathbb{P}(\min\{k \in \mathbb{Z}: U \le F(k)\}=k)\\
+&=\mathbb{P}(F(k-1)<U \le F(k))\\
+&=\mathbb{P}(U \in (F(k-1), F(k)])=F(k)-F(k-1)=f(k)
+\end{align*}
+\end{proof}
+\begin{defn}
+A function $q:[0,1]\rightarrow [0,1]$ is called a \emph{mean involution} if for any uniformly distributed random variable $U$, $\mathbb{P}(F^{-1}(q(U))=k)=f(k)$.
+\end{defn}
+\section{Poisson Distribution}
+We define the Poisson distribution as the limit of a binomial distribution.
+\subsection{Poisson Limit Theorem}
+\begin{defn} Suppose $X\in \mathcal{L}$. We say that $X \sim \mathrm{Bin}(n,p)$ with $n \in \mathbb{Z}$ and $p \in [0,1]$ if:
+\[P(X=k)=\binom{n}{k} p^k (1-p)^{n-k}\]
+\end{defn}
+Suppose that $X \in \mathcal{L}$ has a binomial distribution with $n$ trials and $\mathbb{E}(X)=\lambda \in \mathbb{R}_{\ge 0}<n$. Then the probability of success of each trail is $\lambda/n$ and as the number of trials tends to infinity, the random variable $X$ becomes a infinite number of infinitesimally probable trials in some fixed time period, whose number of successes is expected to be $\lambda$. This is the \emph{Poisson distribution} and its p.m.f.~is given by the limit of the binomial as $n\rightarrow\infty$.
+\begin{prop}
+\[\lim_{n\rightarrow \infty}\binom{n}{k} \left(\frac{\lambda}{n}\right)^k \left(1-\frac{\lambda}{n}\right)^{n-k}=e^{-\lambda}  \frac{\lambda^k}{k!}\]
+\end{prop} 
+\begin{defn}[Poisson Distribution]
+Suppose $X \in \mathcal{L}$. We say that $X \sim \mathcal{P}(\lambda)$ with $\lambda \in \mathbb{R}_{\ge 0}$ if:
+\[\mathbb{P}(X=k)=e^{-\lambda}  \frac{\lambda^k}{k!}\]
+\end{defn}
+\section{Poisson Shocks}
+\subsection{Common Shock Model}
+\subsection{Noble Shock Model}
+\begin{defn}
+Suppose that $H \sim \mathcal{P}(\lambda_H)$, $A \sim \mathcal{P}(\lambda_A)$ are independent random variables and let $F^{-1}(U), F^{-1}(q(U)) \sim \mathcal{P}(\lambda_X)$ be uniform draw variables, independent of $H$ and $A$. The common shock variable is then given by: \[H+F^{-1}(U) \cap A+F^{-1}(q(U))\]
+\end{defn}
+\begin{prop}
+dd
+\end{prop}
+\begin{proof}
+\begin{align*}
+&\phantom{=}\mathbb{P}(H+F^{-1}(U) \cap A+F^{-1}(q(U)))\\
+&=\sum_{k=0}^i \mathbb{P}((H=k)\cap (F^{-1}(U)=i-k)\cap (A+F^{-1}(q(U))=j))\\
+&=\sum_{l=0}^j\sum_{k=0}^i \mathbb{P}((H=k)\cap (F^{-1}(U)=i-k)\cap (A=l)\cap (F^{-1}(q(U))=j-l))\\
+&=\sum_{l=0}^j\sum_{k=0}^i \mathbb{P}(H=k)\mathbb{P} (A=l)\mathbb{P}((F^{-1}(U)=i-k)\cap (F^{-1}(q(U))=j-l)) \\
+\end{align*}
+
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\chapter{The Beautiful Game}
+\section{Random Variables \normalfont{\textit{or Measurable Functions}}}
+Let $(\Omega,\mathcal{F},\{\mathcal{F}_t\}_{t \in [0,1]},\mathbb{P})$ be a filtered probability space and let the goals scored by the home team and away team respectively at time $t \in [0,1]$ be $H_t,A_t:\Omega\rightarrow \mathbb{N}$. Note that time $t$ is given by the proportion of time elapsed so that for example: half time, or $45$ minutes, is given by $t=0.5$. We assume the goal variables are \emph{homogeneous Poisson counting processes}.
+\begin{defn} A \emph{homogeneous Poisson counting process} $\{N_t:t \ge 0\}$ is a stochastic process with
+\begin{enumerate}[i.]
+\item $N_t \ge 0$
+\item independent increments
+\item $N_t \sim \lambda_Nt$
+\end{enumerate} 
+\end{defn}
+We will typically adopt a matrix notation for the \emph{joint distributions} of $H_1$ and $A_1$ so that: \[\alpha_{ij}=\mathbb{P}((H_1=i)\cap (A_1=j))\]
+\subsection{Empirical Probabilities}
+The aggregation of information and expertise can be found in the odds offered on betting exchanges for various events including, and particularly, football. The definition below is included for reference as it may feature in a future analysis of efficient markets.
+\begin{defn}
+Consider a bid-ask market $M$ and suppose that $b$ is the bid price and $a$ the ask. Then the quoted spread $Q$ is given by:
+$Q(M)=2(a-b)/(a+b)$.
+\end{defn}
+\begin{emh}
+Let $h,a,d:[0,1]\rightarrow \mathbb{R}$ be the average of the back and lay odds, on a home win, away win and draw outcomes. Then,
+\begin{align*}
+\text{i.} \quad \mathbb{P}(H_1>A_1)=\frac{1}{h} && \text{ii.} \quad\mathbb{P}(H_1=A_1)=\frac{1}{d} && \text{iii.} \quad\mathbb{P}(A_1>H_1)=\frac{1}{a}
+\end{align*}
+\end{emh}
+\section{Distributions \normalfont{\textit{or Measures of Measurable Preimages}}}
+We describe the joint distributions of the variables, in both dependent and independent contexts, under the assumptions that they follow Poisson distributions.
+\subsection{Independent Poisson}
+We first the consider the independent case characterised by the following equivalent statements:
+\begin{align*}
+\text{i.} \quad \mathbb{P}((H_1=i)\cap (A_1=j))=\mathbb{P}(H_1=i)\mathbb{P} (A_1=j) && \text{ii.} \quad\alpha_{ij}=\alpha_{i0}\alpha_{0j}
+\end{align*}
+\begin{jdm}[IP1]
+\begin{align*}
+u: \mathbb{R}^2_{\ge 0} \rightarrow M_n(\mathbb{R}) && u_{ij}(\lambda_H,\lambda_A)=e^{-(\lambda_H+\lambda_A)}\frac{\lambda_H^i\lambda_A^j}{i!j!}
+\end{align*}
+\end{jdm}
+\begin{proof}[Derivation]
+Trivial from the Poisson p.d.f. and independence assumption.
+\end{proof}
+\subsection{Dependent Poisson \normalfont{(Bivariate)}}
+To consider the bivariate case, we make use of the \emph{decomposability} of distributions.
+\begin{defn}
+A distribution $\mathcal{D}$ is \emph{decomposable} if, for any random variable $Z$, there exist two independent, identically distributed variables $X$ and $Y$ such that $Z=X+Y$.
+\end{defn}
+\begin{thm}
+The Poisson distribution is decomposable.
+\end{thm}
+Therefore, 
+\begin{jdm}[IP1]
+\begin{align*}
+u: \mathbb{R}^2_{\ge 0} \rightarrow M_n(\mathbb{R}) && u_{ij}(\lambda_H,\lambda_A)=e^{-(\lambda_H+\lambda_A)}\frac{\lambda_H^i\lambda_A^j}{i!j!}
+\end{align*}
+\end{jdm}
+\begin{proof}[Derivation]
+Trivial from the Poisson p.d.f. and independence assumption.
+\end{proof}
+
+
+
+
+
+
+
+\chapter{}
+\section{Introduction}
+Under the assumption that the full-time result market is efficient, we attempt to infer from the odds, the parameters of independent and bivariate Poisson distributions. These distributions are then used to find value in side markets with less liquidity and, hopefully, less liquidity. 
+\subsection{Variables}
+Let $(\Omega,\mathcal{F},\{\mathcal{F}_t\}_{t \in [0,1]},\mathbb{P})$ be a filtered probability space and let the goals scored by the home team and away team respectively at time $t \in [0,1]$ be $H_t,A_t:\Omega\rightarrow \mathbb{N}$. Note that time $t$ is given by the proportion of time elapsed so that for example: half time, or $45$ minutes, is given by $t=0.5$. We assume the goal variables are \emph{homogeneous Poisson counting processes}.
+\begin{defn} A \emph{homogeneous Poisson counting process} $\{N_t:t \ge 0\}$ is a stochastic process with:
+\begin{enumerate}[i.]
+\item $N_t \ge 0$
+\item independent increments
+\item $N_t \sim \lambda_Nt$
+\end{enumerate} 
+\end{defn}
+\begin{defn}
+A \emph{model} is a matrix of the form $\alpha_{ij}=\mathbb{P}((H_1=i)\cap (A_1=j))$.
+\end{defn}
+\subsection{Exchange Odds}
+\begin{defn}
+Consider a bid-ask market $M$ and suppose that $b$ is the bid price and $a$ the ask. Then the quoted spread $Q$ is given by:
+$Q(M)=2(a-b)/(a+b)$.
+\end{defn}
+\begin{emh}
+Let $h,a,d:[0,1]\rightarrow \mathbb{R}$ be the average of the back and lay odds, on a home win, away win and draw outcomes. Then,
+\begin{align*}
+\text{i.} \quad \mathbb{P}(H_1>A_1)=\frac{1}{h} && \text{ii.} \quad\mathbb{P}(H_1=A_1)=\frac{1}{d} && \text{iii.} \quad\mathbb{P}(A_1>H_1)=\frac{1}{a}
+\end{align*}
+\end{emh}
+\section{Independent Poisson Model}
+\subsection{Distribution}
+\begin{jdm}[Independent]
+\begin{align*}
+\alpha_{ij}: \mathbb{R}^2_{\ge 0} \rightarrow M_n(\mathbb{R}) && \alpha_{ij}=e^{-(\lambda_H+\lambda_A)}\frac{\lambda_H^i\lambda_A^j}{i!j!}
+\end{align*}
+\end{jdm}
+\begin{proof}[Derivation]
+\begin{align*}
+\alpha_{ij}&=\mathbb{P}((H_1=i)\cap (A_1=j))\\
+&=\mathbb{P}(H_1=i)\mathbb{P}(A_1=j)\\
+&=e^{-\lambda_H}\frac{\lambda_H^i}{i!}e^{-\lambda_A}\frac{\lambda_A^j}{j!}\\
+&=e^{-(\lambda_H+\lambda_A)}\frac{\lambda_H^i\lambda_A^j}{i!j!}
+\end{align*}
+\end{proof}
+\subsection{Full-time Result Probabilities}
+\subsubsection{Home Win}
+\begin{align*}
+\mathbb{P}(H_1>A_1)&=e^{-(\lambda_H+\lambda_A)}\sum_{i>j\ge 0}\frac{\lambda_H^i\lambda_A^j}{i!j!}\\
+&=e^{-(\lambda_H+\lambda_A)}\left(\lambda_H+\frac{\lambda_H^2\lambda_A}{2}+\frac{\lambda_H^2}{2}+\frac{\lambda_H^3\lambda_A^2}{12}+\frac{\lambda_H^3\lambda_A}{6}+\frac{\lambda_H^3}{6}+\frac{\lambda_H^4\lambda_A^3}{144}+\frac{\lambda_H^4\lambda_A^2}{48}\right.\\
+&\left.\phantom{=}+\frac{\lambda_H^4\lambda_A}{24}+\frac{\lambda_H^4}{24}+\frac{\lambda_H^5\lambda_A^4}{2880}+\frac{\lambda_H^5\lambda_A^3}{720}+\frac{\lambda_H^4\lambda_A^2}{240}+\frac{\lambda_H^4\lambda_A}{120}+\frac{\lambda_H^5}{120}+\ldots\right)
+\end{align*}
+\subsubsection{Draw}
+\begin{align*}
+\mathbb{P}(H_1=A_1)&=e^{-(\lambda_H+\lambda_A)}\sum_{i\ge 0}\frac{(\lambda_H\lambda_A)^i}{(i!)^2}\\
+&=e^{-(\lambda_H+\lambda_A)}\left(1+\lambda_H\lambda_A+\frac{(\lambda_H\lambda_A)^2}{4}+\frac{(\lambda_H\lambda_A)^3}{36}+\frac{(\lambda_H\lambda_A)^4}{576}+\frac{(\lambda_H\lambda_A)^5}{14400}+\ldots\right)
+\end{align*}
+\subsection{Away Win}
+\begin{align*}
+\mathbb{P}(A_1>H_1)&=e^{-(\lambda_A+\lambda_H)}\sum_{j>i\ge 0}\frac{\lambda_H^i\lambda_A^j}{i!j!}\\
+&=e^{-(\lambda_A+\lambda_H)}\left(\lambda_A+\frac{\lambda_A^2\lambda_H}{2}+\frac{\lambda_A^2}{2}+\frac{\lambda_A^3\lambda_H^2}{12}+\frac{\lambda_A^3\lambda_H}{6}+\frac{\lambda_A^3}{6}+\frac{\lambda_A^4\lambda_H^3}{144}+\frac{\lambda_A^4\lambda_H^2}{48}\right.\\
+&\left.\phantom{=}+\frac{\lambda_A^4\lambda_H}{24}+\frac{\lambda_A^4}{24}+\frac{\lambda_A^5\lambda_H^4}{2880}+\frac{\lambda_A^5\lambda_H^3}{720}+\frac{\lambda_A^4\lambda_H^2}{240}+\frac{\lambda_A^4\lambda_H}{120}+\frac{\lambda_A^5}{120}+\ldots\right)
+\end{align*}
+\section{Bivariate Poisson Model}
+\subsection{Distribution}
+\begin{jdm}[Independent]
+\begin{align*}
+\alpha_{ij}: \mathbb{R}^3_{\ge 0} \rightarrow M_n(\mathbb{R}) && \alpha_{ij}=e^{-(\lambda_H+\lambda_A)}\frac{\lambda_H^i\lambda_A^j}{i!j!}
+\end{align*}
+\end{jdm}
+\begin{proof}[Derivation]
+\begin{align*}
+\alpha_{ij}&=\mathbb{P}((H_1+X_1=i)\cap (A_1+X_1=j))\\
+&=\sum_{k=0}^i \mathbb{P}((H_1=k)\cap (X_1=i-k)\cap (A_1+X_1=j))\\
+&=\sum_{l=0}^j\sum_{k=0}^i \mathbb{P}((H_1=k)\cap (X_1=i-k)\cap (A_1=l)\cap (X_1=j-l))\\
+&=\sum_{l=0}^j\sum_{k=0}^i \mathbb{P}(H_1=k)\mathbb{P}(X_1=i-k)\mathbb{P} (A_1=l)\mathbb{P} (X_1=j-l)\\
+&=\sum_{l=0}^j\mathbb{P} (A_1=l)\sum_{k=0}^i \mathbb{P}(H_1=k)\mathbb{P}(X_1=i-k)\mathbb{P} (X_1=j-l)\\
+&=e^{-(\lambda_H+\lambda_A)}\frac{\lambda_H^i\lambda_A^j}{i!j!}
+\end{align*}
+\end{proof}
+\end{document}
