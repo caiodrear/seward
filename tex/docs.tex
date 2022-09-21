@@ -11,12 +11,12 @@
 \makeatother							
 
 %----------------------------------metadata------------------------------------
-\title{\normalsize \textsc{``This is my design."} % subtitle
-	   \\[2.0cm] % 2cm spacing
-	   \HRule{1pt} \\ [0.2cm] % upper rule
-	   \LARGE \textbf{\uppercase{Pavlov, Poisson and Parzen}} % title
-	   \HRule{1pt} \\ [3cm] % lower rule + 0.5cm spacing
-	   %\normalsize \today % todays date
+\title{
+	     \HRule{1pt} \\ [0.2cm] % upper rule
+	     \LARGE \textbf{\uppercase{Thorndike's Cats}} % title
+	     \HRule{1pt} \\ [0.5cm] % lower rule + 0.5cm spacing
+	     \normalsize \textsc{A Guide to Reinforcement Learning} \\ [3cm] % subtitle
+	     %\normalsize \today % todays date
 }
 \author{C.D.R.\\}
 %----------------------------------packages------------------------------------
@@ -37,6 +37,7 @@
 \setlength{\headheight}{0.2in}
 \pagestyle{fancy}
 \usepackage{bm}
+\usepackage{bbm}
 
 \usepackage{afterpage}
 \usepackage{xcolor}
@@ -48,7 +49,6 @@
 %\usepackage{cite}
 %\usepackage{url}
 
-%----------------------------------packages------------------------------------
 %-----------------------------commands and titles------------------------------
 
 \newcommand{\fhydro}{d_{\min\left\{\tau_H,\tau_A\right\}}}
@@ -94,19 +94,20 @@
 \pagebreak
 \setcounter{page}{1}
 %---------------------------------document-------------------------------------
-
-\chapter{Count Distributions}
-\section{Discrete Random Variables}
-For the below, let $(\Omega, \mathcal{F},\mathbb{P})$ be a probability space and $(\mathbb{Z},\mathcal{P}(\mathbb{Z}),\#)$ be the discrete space, integers equipped with the counting measure.
-\begin{defn}[Discrete Random Variable]
-A \emph{discrete random variable} is a function $X:\Omega \rightarrow \mathbb{Z}$ such that for each $Z\in \mathcal{P}(\mathbb{Z})$, $X^{-1}(Z) \in \mathcal{F}$.
+\chapter{Probability Theory}
+The objective of \emph{reinforcement learning} is to design agents that interact with their environment in some optimal sense by training them to take actions that maximise a notion of cumulative reward. These environments are often stated in the form of a \emph{Markov decision process}, a fundamental concept in the theory of \emph{dynamic stochastic control}. Therefore, in order to understand reinforcement learning, we require a solid grounding in \emph{probability theory}.
+\section{Random Variables}
+For the below, let $(\Omega,\mathcal{F},\mathbb{P})$ be a probability space and $(S, \Sigma)$ be a measurable space.
+\begin{defn}[Random Variable]
+A \emph{random variable} is a function $X:\Omega \rightarrow S$ such that for each $B\in \Sigma$, $X^{-1}(B) \in \mathcal{F}$.
 \end{defn}
-\begin{defn}[Discrete Probability Distribution]
-The \emph{distribution} of $X$ is the \emph{pushforward measure} $X_*\mathbb{P}:\mathcal{P}(\mathbb{Z})\rightarrow [0,1]$ given by: \[X_*\mathbb{P}(Z)=\mathbb{P}(X^{-1}(Z))=\mathbb{P}(X \in Z)\]
+\begin{defn}[Probability Distribution]
+The \emph{distribution} of $X$ is the \emph{pushforward measure} $X_*\mathbb{P}:\Sigma\rightarrow [0,1]$ given by: \[X_*\mathbb{P}(B)=\mathbb{P}(X^{-1}(B))=\mathbb{P}(X \in B)\]
 \end{defn}
-We say that $X \sim \mathcal{D}$ iff $\forall Z \in \mathcal{P}(Z)$, $X_*\mathbb{P}(Z)=\mathcal{D}(Z)$. However, we will almost always characterise distributions using probability mass functions.
-\subsection{Distribution Functions}
-To understand properly the probability mass function, we require notions of $\sigma$-finiteness and absolute continuity of measures.
+We say that $X \sim \mathcal{D}$ iff $\forall B \in \Sigma$, $X_*\mathbb{P}(B)=\mathcal{D}(B)$.
+This definition is broadly a generalisation of the concept of a cumulative distribution function, acting on sets rather than fixed intervals.
+\par
+To understand properly the related concept of probability mass and density functions, we require notions of $\sigma$-finiteness and absolute continuity of measures.
 \begin{defn}
 A measure $\mu$ on a measurable space $(\Omega, \mathcal{F})$ is $\sigma$\emph{-finite} if, for each $F \in \mathcal{F}$ with $\mu (F)=\infty$, $F$ can be written as a countable union of sets in $\mathcal{F}$, each with finite measure under $\mu$.
 \end{defn}
@@ -116,11 +117,13 @@ Given measures $\mu ,\nu$ on $(\Omega, \mathcal{F})$, we say that $\mu$ is \emph
 \begin{rnt}
 Suppose $\mu, \nu$ are two $\sigma$-finite measures on $(\Omega, \mathcal{F})$ with $\mu\ll \nu$. Then there exists a unique\footnote{$\nu$-almost everywhere} measurable function $f:\Omega \rightarrow [0,\infty)$ such that for each $F \in \mathcal{F}$, \[\mu (F) =\int_F f d\nu\] $f$ is called the Radon-Nikodym derivative and is denoted $\frac{d\mu}{d\nu}$.
 \end{rnt}
+\subsection{Discrete Random Variables}
+A discrete random variable is a random variable with codomain $(\mathbb{Z},\mathcal{P}(\mathbb{Z}),\#)$ where $\#$ is the \emph{counting measure}.
 \begin{defn}[Probability Mass Function]
 The \emph{probability mass function} of a distribution is given by the Radon-Nikodym derivative of the pushforward measure with respect to the counting measure. Namely any measurable function $f:\mathbb{Z} \rightarrow [0,1]$ such that $\forall Z \subseteq \mathbb{Z}$, \[X_*\mathbb{P}(Z)=\int_Zfd\#\]
 \end{defn}
-\begin{thm}
-Every probability distribution admits a probability mass function.
+\begin{thm} \label{discdist}
+Every probability distribution of a discrete random variable admits a probability mass function.
 \end{thm}
 \begin{proof}
 First observe that, should the derivative exist its range must be limited from $[0,\infty)$ to the range of the pushforward measure $[0,1]$ as the integral is summing values in the function range. To show existence, it suffices, by the Radon-Nikodym theorem, to show that every discrete distribution is absolutely continuous with respect to the counting measure. Suppose that $\#(Z)=0$ then $Z=\varnothing$ and by definition of a measure, $X_*\mathbb{P}(\varnothing)=0$.
@@ -129,11 +132,63 @@ First observe that, should the derivative exist its range must be limited from $
 The \emph{cumulative distribution function} of a distribution $F:\mathbb{Z}\rightarrow [0,1]$, with mass function $f$, is given by the distribution function of an interval:
 \[F(x)=X_*\mathbb{P}([0,\max\{0,x\}])=\int_{[0,\max\{0,x\}]}fd\#=\sum_{i=0}^{\max\{0,x\}}f(x)\]
 \end{defn}
-We define a left inverse of the c.d.f.~to generate count distribution variables from the uniform distribution. It is a consequence of Cantor's work that no right inverse, and hence inverse, exists.
-\begin{defn}
-The \emph{inverse c.d.f.}~$F^{-1}:[0,1] \rightarrow \mathbb{Z}$ of the a distribution is given by:
-\[F^{-1}(u)=\min\{k \in \mathbb{Z}: u \le F(k)\}\]
+\subsection{Continuous Random Variables}
+A continuous random variable is a random variable with codomain $(\mathbb{R},L(\mathbb{R}),\lambda)$ where $\lambda$ is the \emph{Lebesgue measure} and $L(\mathbb{R})$ the \emph{Lebesgue $\sigma$-algebra} over $\mathbb{R}$.
+\begin{defn}[Probability Density Function]
+The \emph{probability density function} of a distribution is given by the Radon-Nikodym derivative of the pushforward measure with respect to the Lebesgue measure. Namely any measurable function $f:\mathbb{R} \rightarrow [0,1]$ such that $\forall R \in L(\mathbb{R})$, \[X_*\mathbb{P}(R)=\int_Rfd\lambda\]
 \end{defn}
+Note that there is no such theorem analogous to \ref{discdist} since the probability of a random variable being a member of a null set\footnote{A set with a zero Lebesgue measure.} is not necessarily zero.
+\section{Expected Value and Conditioning}
+While not required immediately, it will be useful to define this concept for future reference.
+\begin{defn}{(Expected Value)} The \emph{expected value} of a random variable $X:\Omega \rightarrow S$ is given by: \[\mathbb{E}(X) = \int_\Omega X\mathrm{d}\mathbb{P}\]
+\end{defn}
+Recall the definition of the indicator function which will be required later.
+\begin{defn}{(Indicator Function)} For a set $A$, the \emph{indicator function} of $A$ is given by:
+\[\mathbbm{1}_A(x):=\begin{cases} 1 & x \in A\\ 0 & x \notin A \end{cases}\]
+\end{defn}
+\begin{defn}{(Conditional Expectation)}
+Suppose $\mathcal{H} \subseteq \mathcal{F}$ is a sub-$\sigma$-algebra. The \emph{conditional expectation} of $X$ with respect to $\mathcal{H}$ is any $\mathcal{H}$-measurable function $\mathbb{E}(X\mid \mathcal{H}):\Omega \rightarrow S$ such that for every $H \in \mathcal{H}$,
+\[\int_H \mathbb{E}(X\mid \mathcal{H})\mathrm{d}\mathbb{P} = \int_H X\mathrm{d}\mathbb{P}\]
+\end{defn}
+Conditional expectation exists uniquely\footnote{Almost surely.} in $L^1$ space and possibly all $L^p$ spaces but its existence and uniqueness in further generality requires investigation. Finally, we have the definition of conditional probability with respect to a $\sigma$-algebra.
+\begin{defn}{(Conditional Probability)} The conditional probability of $F \in \mathcal{F}$ with respect to $\mathcal{H} \subseteq \mathcal{F}$ is given by: \[\mathbb{P}(F \mid \mathcal{H}) := \mathbb{E}(\mathbbm{1}_F \mid \mathcal{H})\] In other words, any $\mathcal{H}$-measurable function $f:\Omega \rightarrow S$ such that for every $H \in \mathcal{H}$:
+\[\int_H f\mathrm{d}\mathbb{P} = \int_H \mathbbm{1}_F\mathrm{d}\mathbb{P}=\int_F\mathrm{d}\mathbb{P}=\mathbb{P}(F)\]
+\end{defn}
+
+
+
+
+
+\section{Stochastic Processes}
+Conceptually, we think of a stochastic process as sequence of random variables, each affected in some way by a number of the previous. However, in order to define this idea properly, we require a notion of the events that have occurred up to a point in the sequence. We call this a \emph{filtration}.
+\begin{defn}{(Filtration)}
+A \emph{filtration} of a probability space $(\Omega, \mathcal{F}, \mathbb{P})$ is a collection of $\sigma$-algebra $\{\mathcal{F}_t: t \in T\}$ such that for each $t,s \in T$, if $s \leq t$ then $\mathcal{F}_s \subseteq \mathcal{F}_t \subseteq \mathcal{F}$.
+\end{defn}
+\begin{defn}{(Stochastic Process)}
+Suppose $(\Omega,\mathcal{F},\mathbb{P})$ is a probability space and $(S, \Sigma)$ a measurable space. A \emph{stochastic process} is a collection or sequence $\{X_t: t \in T\}$ of random variables, mapping these spaces. The set $T$ is usually, though not necessarily, totally ordered.
+\end{defn}
+We say a stochastic process is \emph{adapted} to a filtration $\{\mathcal{F}_t: t \in T\}$ if each of its $X_t$ is measurable with respect to its corresponding $\mathcal{F}_t$.
+\begin{defn}{(Generated $\sigma$-algebra)}
+Given a set, $\Omega$ and a collection of subsets $F \subseteq \mathcal{P}(\Omega)$, we define the \emph{$\sigma$-algebra generated by $F$}, denoted $\sigma(F)$, as the collection of all subsets of $\Omega$ that can be formed by a countable number of unions, intersections or complements of elements of $F$.
+\end{defn}
+\begin{defn}{(Natural Filtration)}
+Suppose $(\Omega,\mathcal{F},\mathbb{P})$ is a probability space, $(S, \Sigma)$ a measurable space and $\{X_t: t \in T\}$ a stochastic process. The \emph{natural filtration} of the stochastic process is given by: \[\mathcal{F}_t=\sigma(\{X_s^{-1}(B): B \in \Sigma, t \in T, s \leq t \})\]
+\end{defn}
+\begin{lem}
+Every stochastic process is adapted to its natural filtration.
+\end{lem}
+\begin{proof}
+This is trvial as $X_t$ will always be measurable with respect to a $\sigma$-algebra generated by a collection that includes its preimage. 
+\end{proof}
+\section{The Markov Property}
+The \emph{Markov} property, gives a formal definition to the idea of a memoryless process. That is, one whose current state is only informed by its direct predecessor rather than all that came before it.
+
+
+
+
+
+
+
 \subsection{Variable Spaces}
 In general, the underlying measure space $(\Omega, \mathcal{F},\mathbb{P})$ of an experiment is rarely explicitly characterized or even characterizable and so we will denote the set of all random variables with discrete space domain as $\mathcal{L}$.
 \begin{defn}[The Distribution Space]
