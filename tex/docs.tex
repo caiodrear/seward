@@ -95,7 +95,7 @@
 \setcounter{page}{1}
 %---------------------------------document-------------------------------------
 \chapter{Probability Theory}
-The objective of \emph{reinforcement learning} is to design agents that interact with their environment in some optimal sense by training them to take actions that maximise a notion of cumulative reward. These environments are often stated in the form of a \emph{Markov decision process}, a fundamental concept in the theory of \emph{dynamic stochastic control}. Therefore, in order to understand reinforcement learning, we require a solid grounding in \emph{probability theory}.
+The objective of \emph{reinforcement learning} is to design agents that interact with their environment in some optimal sense by training them to take actions that maximise a notion of cumulative reward. These environments are often stated in the form of a \emph{Markov decision process}, a fundamental concept in the theory of \emph{dynamic stochastic control}. While not strictly necessary to approach \emph{probability theory} with the rigour of \emph{measure theory}, it helps to unify the field of study across random variable codomains. Therefore, the following will act as a primer on the theory of probability measures.
 \section{Random Variables}
 For the below, let $(\Omega,\mathcal{F},\mathbb{P})$ be a probability space and $(S, \Sigma)$ be a measurable space.
 \begin{defn}[Random Variable]
@@ -188,16 +188,19 @@ Suppose $(\Omega,\mathcal{F},\{\mathcal{F}_t\}_{t \in T},\mathbb{P})$ is a filte
 In reinforcement learning, we will always be in discrete time and so do not always require the generality of the above definitions, especially in the case of the Markov property. Therefore, we present some simplified definitions, only relevant to the case of countable index sets $T$. We call such Markov processes: \emph{Markov chains}.
 \begin{lem}
 Suppose $T \subseteq \mathbb{N}$. Then the Markov property is equivalent to:
-\[\mathbb{P}\left(X_t \in A \mid \bigcap_{s<t} X_t\right) = \mathbb{P}(X_t \in A \mid X_t)\]
+\[\mathbb{P}\left(X_t \in A \mid \bigcap_{s<t} X_s^{-1}(B_s)\right) = \mathbb{P}(X_t \in A \mid X_{t-1} \in B_{t-1})\]
 \end{lem}
-
+\begin{proof}
+Exercise.
+\end{proof}
 \begin{defn}(Markov Chain)
 Suppose $(\Omega,\mathcal{F},\{\mathcal{F}_t\}_{t \in T},\mathbb{P})$ is a filtered probability space, $(S, \Sigma)$ is a measurable space, $T \subseteq \mathbb{N}$ and $\{X_t\}_{t\in T}$ is a stochastic process adapted to the filtration. The stochastic process, is a \emph{Markov chain} if...
 \end{defn}
-\chapter{Markov Decision Processes}
-\section{Introduction}
+\chapter{Classical Reinforcement Learning}
+We present here, a classical view of reinforcement learning through the language of \emph{Markov decision processes}. Where possible, we will remain rigorous with notions and definitions but a formalisation of this field in the language of measure theory, if even feasible, will come later.
+\section{Markov Decision Processes}
 The \emph{Markov decision process} (MDP) is a fundamental object of study within reinforcement learning. Most RL problems will be presented as the task of solving an MDP. In the case of \emph{deep} reinforcement learning, for example, \emph{artificial neural networks} are used to solve an MDP.
-\begin{defn}
+\begin{defn}{(Markov Decision Process)}
 A \emph{Markov decision process} is a $4$-tuple $(S, A, P_a, R_a)$ where:
 \begin{enumerate}
 \item $S$ is the set of states, called the \emph{state space}.
